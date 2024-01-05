@@ -1,11 +1,33 @@
-import numpy as np
 from pymatgen.core.structure import Molecule
 from mol_graph_funcs import compare_mols
 from data_loading import load_data_from_h5, load_reference_molecule
 from multiprocessing import Pool
+from typing import List, Tuple
+import numpy as np
 
 
-def process_molecules(data_batch):
+def process_molecules(data_batch: List[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Molecule]]) -> List[str]:
+    """
+    Process a batch of data tuples representing molecular information and compare them to a reference molecule.
+
+    Parameters
+    ----------
+    data_batch : List[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Molecule]]
+        A list of tuples, where each tuple contains positions, atomic numbers, reference coordinates,
+        reference atomic numbers, and a reference Molecule object.
+
+    Returns
+    -------
+    List[str]
+        A list of strings indicating whether each molecule in the batch is the same as the reference molecule.
+
+    Examples
+    --------
+    >>> data_batch = [(positions1, atomic_nums1, ref_coords, ref_atomic_nums, ref_molecule),
+                      (positions2, atomic_nums2, ref_coords, ref_atomic_nums, ref_molecule)]
+    >>> results = process_molecules(data_batch)
+    >>> print(results)
+    """
     results = []
     for data_tuple in data_batch:
         coords, atomic_nums, ref_coords, ref_atomic_nums, ref_molecule = data_tuple
