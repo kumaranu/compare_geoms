@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "compare_geoms"
-description="A Python package description goes here."
+description="This package compares a list of molecular geometries to the geometries in large datasets."
 version = "0.0.1"
 readme = "README.md"
 license = { text = "BSD-3" }
-authors = [{ name = "YourName", email = "YourName@email.com" }]
-keywords = ["MyKeyword1", "MyKeyword2"]
+authors = [{ name = "Anup Kumar", email = "kumaranu@lbl.gov" }]
+keywords = ["sella", "transition1x"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -25,7 +25,7 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 requires-python = ">=3.9, <3.13"
-dependencies = ["numpy"]
+dependencies = ["numpy", "pymatgen"]
 
 [project.optional-dependencies]
 dev = ["black>=23.7.0", "docformatter>=1.7.5", "isort>=5.12.0", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
