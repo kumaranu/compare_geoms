@@ -64,6 +64,6 @@ if __name__ == "__main__":
     --------
     >>> python script_name.py
     """
-    path_to_ref_molecule = '/home/kumaranu/Documents/analysis/molecules_fromscratch_noised_renamed_b00/264_noise00.xyz'
-    path_to_h5_file = '/home/kumaranu/Documents/compare_geoms/tests/output_9953.h5'
+    path_to_ref_molecule = '../tests/264_noise00.xyz'
+    path_to_h5_file = '../tests/output_9953.h5'
     compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
