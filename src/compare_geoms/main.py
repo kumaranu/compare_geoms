@@ -1,6 +1,6 @@
 from multiprocessing import Pool
-from molecule_processing import process_molecules
-from data_loading import load_data_from_h5, load_reference_molecule
+from compare_geoms.molecule_processing import process_molecules
+from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 import time
 
 
@@ -64,6 +64,6 @@ if __name__ == "__main__":
     --------
     >>> python script_name.py
     """
-    path_to_ref_molecule = '../tests/264_noise00.xyz'
-    path_to_h5_file = '../tests/output_9953.h5'
+    path_to_ref_molecule = '../../tests/264_noise00.xyz'
+    path_to_h5_file = '../../tests/output_9953.h5'
     compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)

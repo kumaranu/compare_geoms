@@ -1,6 +1,6 @@
 from pymatgen.core.structure import Molecule
-from mol_graph_funcs import compare_mols
-from data_loading import load_data_from_h5, load_reference_molecule
+from compare_geoms.mol_graph_funcs import compare_mols
+from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 from multiprocessing import Pool
 from typing import List, Tuple
 import numpy as np
@@ -51,7 +51,7 @@ def process_molecules(data_batch: List[Tuple[np.ndarray, np.ndarray, np.ndarray,
 
 if __name__ == '__main__':
     path_to_ref_molecule = '/home/kumaranu/Documents/analysis/molecules_fromscratch_noised_renamed_b00/264_noise00.xyz'
-    path_to_h5_file = '/home/kumaranu/Documents/compare_geoms/tests/output_9953.h5'
+    path_to_h5_file = '/tests/output_9953.h5'
     ref_coords, ref_atomic_nums, ref_molecule = load_reference_molecule(path_to_ref_molecule)
     data_list = load_data_from_h5(path_to_h5_file, ref_coords, ref_atomic_nums, ref_molecule)
 

@@ -72,7 +72,7 @@ def load_reference_molecule(path_to_ref_molecule: str = None) -> tuple:
 
 
 if __name__ == '__main__':
-    path_to_ref_molecule = '/home/kumaranu/Documents/analysis/molecules_fromscratch_noised_renamed_b00/264_noise00.xyz'
+    path_to_ref_molecule = '../../tests/264_noise00.xyz'
     reference_coords, reference_atomic_nums, reference_molecule = load_reference_molecule(path_to_ref_molecule)
 
     print(reference_coords)

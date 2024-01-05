@@ -1,5 +1,5 @@
-from molecule_processing import process_molecules
-from data_loading import load_data_from_h5, load_reference_molecule
+from compare_geoms.molecule_processing import process_molecules
+from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 
 sample_h5_file = 'output_9953.h5'
 sample_ref_molecule = '264_noise00.xyz'

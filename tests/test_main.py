@@ -1,4 +1,4 @@
-from main import compare_one_ref_mol
+from compare_geoms.main import compare_one_ref_mol
 
 sample_h5_file = 'output_9953.h5'
 sample_ref_molecule = '264_noise00.xyz'
