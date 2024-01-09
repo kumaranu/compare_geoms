@@ -13,7 +13,7 @@ from pymatgen.analysis.graphs import MoleculeGraph
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pandas import read_csv
 
-from mol_graph_funcs import create_molecule_graph,\
+from .mol_graph_funcs import create_molecule_graph,\
     add_specie_suffix, get_graph_hash
 
 
