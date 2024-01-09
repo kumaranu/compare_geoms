@@ -1,7 +1,65 @@
 from multiprocessing import Pool
+
+import networkx as nx
+
 from compare_geoms.molecule_processing import process_molecules
 from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 import os, time
+from pysmiles import read_smiles
+
+from pymatgen.core.structure import Molecule
+from pymatgen.analysis.local_env import OpenBabelNN
+from pymatgen.analysis.graphs import MoleculeGraph
+from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
+from pandas import read_csv
+
+from mol_graph_funcs import create_molecule_graph,\
+    add_specie_suffix, get_graph_hash
+
+
+def compare_one_ref_mol_from_smiles(smiles_string: str, path_to_ref_molecule: str) -> bool:
+    molecule_smiles = read_smiles(smiles_string, explicit_hydrogen=True,
+                                  zero_order_bonds=True, reinterpret_aromatic=True)
+
+    graph_1 = molecule_smiles.to_undirected()
+
+    #for idx in graph_1.nodes():
+    #    if 'element' in graph_1.nodes()[idx]:
+    #        graph_1.nodes()[idx]['specie'] = graph_1.nodes()[idx].pop('element') + str(idx)
+
+    ref_molecule = Molecule.from_file(path_to_ref_molecule)
+    molgraph_2 = create_molecule_graph(ref_molecule)
+    graph_2 = molgraph_2.graph.to_undirected()
+
+    # for idx in graph_2.nodes():
+    #     print(graph_2.nodes()[idx]["specie"])
+
+    # print(graph_2.nodes['specie'])
+    #add_specie_suffix(graph_2)
+    # print('\n\n\n\n\naaaaaaaa\n\n\n\n')
+    # for idx in graph_2.nodes():
+    #     print(graph_2.nodes()[idx]["specie"])
+    # print(graph_2)
+    # print(graph_2.edges)
+    graph_2_hash = get_graph_hash(graph_2)
+
+    ref_molecule_graph = MoleculeGraph.with_local_env_strategy(ref_molecule, OpenBabelNN())
+
+    # ref_molecule_graph = ref_molecule_graph.
+    # graph_1, graph_2 = map(lambda graph: graph.graph.to_undirected(), [molecule_graph, ref_molecule_graph])
+    # print(graph_1.nodes)
+    # mol.nodes(data='element'))
+
+    # for idx in :
+    #     print(idx)
+    #     # graph.nodes()[idx]["specie"] += str(idx)
+
+    # Calculate and compare graph hashes using Weisfeiler-Lehman algorithm
+    # graph_1_hash = weisfeiler_lehman_graph_hash(graph_1, node_attr='specie')
+    # graph_2_hash = weisfeiler_lehman_graph_hash(graph_2, node_attr='specie')
+
+    # return graph_1_hash == graph_2_hash
+    return nx.is_isomorphic(graph_1, graph_2)
 
 
 def compare_one_ref_mol(path_to_data: str, path_to_ref_molecule: str) -> None:
@@ -54,25 +112,31 @@ def compare_one_ref_mol(path_to_data: str, path_to_ref_molecule: str) -> None:
             print(result)
 
 
+import logging
+logging.getLogger('pysmiles').setLevel(logging.CRITICAL)  # Anything higher than warning
+
+
+def process_molecule1(args):
+    path_to_ref_molecule, smiles_strings = args
+    for smiles_string in smiles_strings:
+        if compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule):
+            print(smiles_string, path_to_ref_molecule)
+            return 1
+    return 0
+
+
 if __name__ == "__main__":
-    """
-    Run the comparison of a reference molecule to a set of molecules stored in an HDF5 file.
-
-    This script initializes the paths to the HDF5 file and the reference molecule, then calls
-    the compare_one_ref_mol function to perform the molecule comparison.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    >>> python script_name.py
-    """
-    path_to_ref_molecule = '../../tests/264_noise00.xyz'
     path_to_h5_file = '../../tests/output_9953.h5'
-    compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
+    path_to_csv_file = '/home/kumaranu/Downloads/b97d3.csv'
+    smiles_strings = read_csv(path_to_csv_file)['rsmi']
+
+    inputs = []
+    smiles_df = read_csv(path_to_csv_file)
+    for i in range(265):
+        path_to_ref_molecule = (f'/home/kumaranu/Documents/analysis/'
+                                f'molecules_fromscratch_noised_renamed_b00/{i:03}_noise00.xyz')
+        partial_process_molecule = inputs.append((path_to_ref_molecule, smiles_df['rsmi']))
+
+    # Use multiprocessing with 50 pools
+    with Pool(20) as pool:
+            results = pool.map(process_molecule1, inputs)
