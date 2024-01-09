@@ -1,4 +1,7 @@
 from multiprocessing import Pool
+
+import networkx as nx
+
 from compare_geoms.molecule_processing import process_molecules
 from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 import os, time
@@ -8,6 +11,7 @@ from pymatgen.core.structure import Molecule
 from pymatgen.analysis.local_env import OpenBabelNN
 from pymatgen.analysis.graphs import MoleculeGraph
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
+from pandas import read_csv
 
 from mol_graph_funcs import create_molecule_graph,\
     add_specie_suffix, get_graph_hash
@@ -19,9 +23,9 @@ def compare_one_ref_mol_from_smiles(smiles_string: str, path_to_ref_molecule: st
 
     graph_1 = molecule_smiles.to_undirected()
 
-    for idx in graph_1.nodes():
-        if 'element' in graph_1.nodes()[idx]:
-            graph_1.nodes()[idx]['specie'] = graph_1.nodes()[idx].pop('element') + str(idx)
+    #for idx in graph_1.nodes():
+    #    if 'element' in graph_1.nodes()[idx]:
+    #        graph_1.nodes()[idx]['specie'] = graph_1.nodes()[idx].pop('element') + str(idx)
 
     ref_molecule = Molecule.from_file(path_to_ref_molecule)
     molgraph_2 = create_molecule_graph(ref_molecule)
@@ -31,7 +35,7 @@ def compare_one_ref_mol_from_smiles(smiles_string: str, path_to_ref_molecule: st
     #     print(graph_2.nodes()[idx]["specie"])
 
     # print(graph_2.nodes['specie'])
-    add_specie_suffix(graph_2)
+    #add_specie_suffix(graph_2)
     # print('\n\n\n\n\naaaaaaaa\n\n\n\n')
     # for idx in graph_2.nodes():
     #     print(graph_2.nodes()[idx]["specie"])
@@ -55,7 +59,7 @@ def compare_one_ref_mol_from_smiles(smiles_string: str, path_to_ref_molecule: st
     # graph_2_hash = weisfeiler_lehman_graph_hash(graph_2, node_attr='specie')
 
     # return graph_1_hash == graph_2_hash
-    return 0
+    return nx.is_isomorphic(graph_1, graph_2)
 
 
 def compare_one_ref_mol(path_to_data: str, path_to_ref_molecule: str) -> None:
@@ -108,6 +112,10 @@ def compare_one_ref_mol(path_to_data: str, path_to_ref_molecule: str) -> None:
             print(result)
 
 
+import logging
+logging.getLogger('pysmiles').setLevel(logging.CRITICAL)  # Anything higher than warning
+
+
 if __name__ == "__main__":
     """
     Run the comparison of a reference molecule to a set of molecules stored in an HDF5 file.
@@ -129,6 +137,10 @@ if __name__ == "__main__":
     """
     path_to_ref_molecule = '../../tests/264_noise00.xyz'
     path_to_h5_file = '../../tests/output_9953.h5'
+    path_to_csv_file = '/home/kumaranu/Downloads/b97d3.csv'
+    smiles_strings = read_csv(path_to_csv_file)['rsmi']
     # compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
-    smiles_string = '[C:1]([c:2]1[n:3][o:4][n:5][n:6]1)([H:7])([H:8])[H:9]'
-    compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule)
+    # smiles_string = '[C:1]([c:2]1[n:3][o:4][n:5][n:6]1)([H:7])([H:8])[H:9]'
+    for smiles_string in smiles_strings:
+        if compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule):
+            print(smiles_string, 'Same')
