@@ -116,31 +116,27 @@ import logging
 logging.getLogger('pysmiles').setLevel(logging.CRITICAL)  # Anything higher than warning
 
 
+def process_molecule1(args):
+    path_to_ref_molecule, smiles_strings = args
+    for smiles_string in smiles_strings:
+        if compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule):
+            print(smiles_string, path_to_ref_molecule)
+            return 1
+    return 0
+
+
 if __name__ == "__main__":
-    """
-    Run the comparison of a reference molecule to a set of molecules stored in an HDF5 file.
-
-    This script initializes the paths to the HDF5 file and the reference molecule, then calls
-    the compare_one_ref_mol function to perform the molecule comparison.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    >>> python script_name.py
-    """
-    path_to_ref_molecule = '../../tests/264_noise00.xyz'
     path_to_h5_file = '../../tests/output_9953.h5'
     path_to_csv_file = '/home/kumaranu/Downloads/b97d3.csv'
     smiles_strings = read_csv(path_to_csv_file)['rsmi']
-    # compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
-    # smiles_string = '[C:1]([c:2]1[n:3][o:4][n:5][n:6]1)([H:7])([H:8])[H:9]'
-    for smiles_string in smiles_strings:
-        if compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule):
-            print(smiles_string, 'Same')
+
+    inputs = []
+    smiles_df = read_csv(path_to_csv_file)
+    for i in range(265):
+        path_to_ref_molecule = (f'/home/kumaranu/Documents/analysis/'
+                                f'molecules_fromscratch_noised_renamed_b00/{i:03}_noise00.xyz')
+        partial_process_molecule = inputs.append((path_to_ref_molecule, smiles_df['rsmi']))
+
+    # Use multiprocessing with 50 pools
+    with Pool(20) as pool:
+            results = pool.map(process_molecule1, inputs)
