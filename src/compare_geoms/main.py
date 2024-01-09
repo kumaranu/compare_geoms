@@ -2,6 +2,60 @@ from multiprocessing import Pool
 from compare_geoms.molecule_processing import process_molecules
 from compare_geoms.data_loading import load_data_from_h5, load_reference_molecule
 import os, time
+from pysmiles import read_smiles
+
+from pymatgen.core.structure import Molecule
+from pymatgen.analysis.local_env import OpenBabelNN
+from pymatgen.analysis.graphs import MoleculeGraph
+from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
+
+from mol_graph_funcs import create_molecule_graph,\
+    add_specie_suffix, get_graph_hash
+
+
+def compare_one_ref_mol_from_smiles(smiles_string: str, path_to_ref_molecule: str) -> bool:
+    molecule_smiles = read_smiles(smiles_string, explicit_hydrogen=True,
+                                  zero_order_bonds=True, reinterpret_aromatic=True)
+
+    graph_1 = molecule_smiles.to_undirected()
+
+    for idx in graph_1.nodes():
+        if 'element' in graph_1.nodes()[idx]:
+            graph_1.nodes()[idx]['specie'] = graph_1.nodes()[idx].pop('element') + str(idx)
+
+    ref_molecule = Molecule.from_file(path_to_ref_molecule)
+    molgraph_2 = create_molecule_graph(ref_molecule)
+    graph_2 = molgraph_2.graph.to_undirected()
+
+    # for idx in graph_2.nodes():
+    #     print(graph_2.nodes()[idx]["specie"])
+
+    # print(graph_2.nodes['specie'])
+    add_specie_suffix(graph_2)
+    # print('\n\n\n\n\naaaaaaaa\n\n\n\n')
+    # for idx in graph_2.nodes():
+    #     print(graph_2.nodes()[idx]["specie"])
+    # print(graph_2)
+    # print(graph_2.edges)
+    graph_2_hash = get_graph_hash(graph_2)
+
+    ref_molecule_graph = MoleculeGraph.with_local_env_strategy(ref_molecule, OpenBabelNN())
+
+    # ref_molecule_graph = ref_molecule_graph.
+    # graph_1, graph_2 = map(lambda graph: graph.graph.to_undirected(), [molecule_graph, ref_molecule_graph])
+    # print(graph_1.nodes)
+    # mol.nodes(data='element'))
+
+    # for idx in :
+    #     print(idx)
+    #     # graph.nodes()[idx]["specie"] += str(idx)
+
+    # Calculate and compare graph hashes using Weisfeiler-Lehman algorithm
+    # graph_1_hash = weisfeiler_lehman_graph_hash(graph_1, node_attr='specie')
+    # graph_2_hash = weisfeiler_lehman_graph_hash(graph_2, node_attr='specie')
+
+    # return graph_1_hash == graph_2_hash
+    return 0
 
 
 def compare_one_ref_mol(path_to_data: str, path_to_ref_molecule: str) -> None:
@@ -75,4 +129,6 @@ if __name__ == "__main__":
     """
     path_to_ref_molecule = '../../tests/264_noise00.xyz'
     path_to_h5_file = '../../tests/output_9953.h5'
-    compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
+    # compare_one_ref_mol(path_to_h5_file, path_to_ref_molecule)
+    smiles_string = '[C:1]([c:2]1[n:3][o:4][n:5][n:6]1)([H:7])([H:8])[H:9]'
+    compare_one_ref_mol_from_smiles(smiles_string, path_to_ref_molecule)

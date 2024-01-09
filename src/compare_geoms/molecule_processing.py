@@ -6,7 +6,8 @@ from typing import List, Tuple
 import numpy as np
 
 
-def process_molecules(data_batch: List[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Molecule]]) -> List[str]:
+def process_molecules(data_batch: List[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Molecule]],
+                      **metadata) -> List[str]:
     """
     Process a batch of data tuples representing molecular information and compare them to a reference molecule.
 
@@ -58,4 +59,8 @@ if __name__ == '__main__':
     with Pool(10) as pool:
         # results = pool.map(process_molecules, data_list)
         chunksize = 100  # Adjust the chunksize based on experimentation
-        results = pool.map(process_molecules, [data_list[i:i+chunksize] for i in range(0, len(data_list), chunksize)])
+        results = pool.map(process_molecules,
+                           [data_list[i:i+chunksize] for i in range(0, len(data_list), chunksize)],
+                           path_to_ref_molecule=path_to_ref_molecule,
+                           path_to_h5_file=path_to_h5_file,
+                           )
