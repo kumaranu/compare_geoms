@@ -33,9 +33,9 @@ theme:
     - search.share
     - header.autohide
     - toc.follow
-  name: material
+  name: mkdocs
   palette:
-    primary: orange
+    primary: red
     scheme: slate
 
 markdown_extensions:
