@@ -1,5 +1,5 @@
 # compare_geoms
 
-Welcome to the documentation for the `compare_geoms` code! Here you will find everything you need to get started with your own Python package.
+Welcome to the documentation for the `compare_geoms` code!
 
-**Check out the corresponding ⭐[YouTube tutorial](https://www.youtube.com/watch?v=th2CqJ6oBuM)⭐ for a video overview!**
+This package provides a functionality to efficiently compare molecular geometries using their graph isomorphism checks.
