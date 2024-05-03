@@ -78,8 +78,6 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - autorefs
-  - social
-  - offline
   - mkdocstrings:
       default_handler: python
       handlers:
